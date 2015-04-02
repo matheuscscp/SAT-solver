@@ -35,9 +35,7 @@ struct Formula {
     n_literals = 0;
     for (int i = 0; i < n_clauses; i++) {
       for (char c = 0; c != '\n'; c = getchar()) {
-        int var;
-        scanf("%d", &var);
-        literals[n_literals++] = var;
+        scanf("%d", &literals[n_literals++]);
       }
       clauses[i] = n_literals;
     }
