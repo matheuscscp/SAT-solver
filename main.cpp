@@ -15,12 +15,12 @@
 
 // represents a propositional formula
 struct Formula {
-  // i means the i-th variable. -i means the i-th variable negated.
+  // i means the i-th variable, -i means the i-th variable negated
   int literals[MAX_FORMULA_SIZE];
   int nbliterals;
   
   // index of the last literal of the clause (in the array of literals
-  // above) + 1.
+  // above) + 1
   int clauses[MAX_FORMULA_SIZE];
   int nbclauses;
   
