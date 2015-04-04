@@ -6,6 +6,9 @@
  */
 
 #include <cstdio>
+#include <cstring>
+
+#define abs(X)  ((X) > 0 ? (X) : (-(X)))
 
 // the size of a formula is the sum of the number of literals in each clause
 #define MAX_FORMULA_SIZE  1000
@@ -55,7 +58,7 @@ struct Formula {
     Formula& simple = simplifications[++stack_size];
     assignments[stack_size] = literals[0];
     switch (simplify()) {
-      case 1: // possibly smaller formula
+      case 1: // smaller formula
         if (simple.solve()) {
           return true;
         }
@@ -67,7 +70,7 @@ struct Formula {
     }
     assignments[stack_size] = -literals[0];
     switch (simplify()) {
-      case 1: // possibly smaller formula
+      case 1: // smaller formula
         if (simple.solve()) {
           return true;
         }
@@ -123,10 +126,26 @@ struct Formula {
         simple.clauses[simple.nbclauses++] = simple.nbliterals;
       }
     }
-    if (simple.nbclauses > 0) {
-      return 1; // possibly smaller formula
+    if (simple.nbclauses == 0) { // satisfiable
+      return 2;
     }
-    return 2; // satisfiable
+    else if (simple.nbclauses == simple.nbliterals) {// each clause is a literal
+      static char varsigns[MAX_VARIABLES + 1];
+      memset(varsigns, 0, sizeof varsigns);
+      for (int i = 0; i < simple.nbliterals; i++) {
+        int var = abs(simple.literals[i]);
+        char& sign = varsigns[var];
+        if (!sign) {
+          sign = (simple.literals[i] > 0 ? 1 : -1);
+          continue;
+        }
+        if (var*sign != simple.literals[i]) {
+          return 3; // inconsistent set of literals, then evaluated false
+        }
+      }
+      return 2; // consistent set of literals, then satisfiable
+    }
+    return 1; // smaller formula  
   }
   
   // prettyprint formula
