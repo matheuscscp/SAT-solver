@@ -1,2 +1,2 @@
-# basic_backtracking
-Basic backtracking algorithm.
+# DPLL
+DPLL algorithm.

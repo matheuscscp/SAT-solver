@@ -1,7 +1,7 @@
 /*
  * main.cpp
  *
- *  Created on: Apr 1, 2015
+ *  Created on: Apr 4, 2015
  *      Author: Pimenta
  */
 
@@ -50,7 +50,7 @@ struct Formula {
     }
   }
   
-  // basic backtracking solver
+  // DPLL solver
   bool solve() {
     Formula& simple = simplifications[++stack_size];
     assignments[stack_size] = literals[0];
