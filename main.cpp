@@ -29,7 +29,7 @@ struct Formula {
   
   // solver stack
   static Formula simplifications[MAX_VARIABLES + 1];
-  static int assignments[MAX_VARIABLES + 1];
+  static int literal;
   static int stack_size;
   
   // read the instance from stdin
@@ -53,7 +53,7 @@ struct Formula {
   // basic backtracking solver
   bool solve() {
     Formula& simple = simplifications[++stack_size];
-    assignments[stack_size] = literals[0];
+    literal = literals[0];
     switch (simplify()) {
       case 1: // smaller formula
         if (simple.solve()) {
@@ -65,7 +65,7 @@ struct Formula {
       case 3: // evaluated false
         break;
     }
-    assignments[stack_size] = -literals[0];
+    literal = -literals[0];
     switch (simplify()) {
       case 1: // smaller formula
         if (simple.solve()) {
@@ -86,7 +86,6 @@ struct Formula {
     Formula& simple = simplifications[stack_size];
     simple.nbclauses = 0;
     simple.nbliterals = 0;
-    int literal = assignments[stack_size];
     bool found = false;
     int cur_nbliterals = 0;
     for (int j = 0; j < clauses[0] && !found; j++) {
@@ -174,7 +173,7 @@ struct Formula {
 // static Formula members
 int Formula::nbvar;
 Formula Formula::simplifications[MAX_VARIABLES + 1];
-int Formula::assignments[MAX_VARIABLES + 1];
+int Formula::literal;
 int Formula::stack_size = 0;
 
 int main() {
