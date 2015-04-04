@@ -55,7 +55,7 @@ struct Formula {
     Formula& simple = simplifications[++stack_size];
     assignments[stack_size] = literals[0];
     switch (simplify()) {
-      case 1: // possibly smaller formula
+      case 1: // smaller formula
         if (simple.solve()) {
           return true;
         }
@@ -67,7 +67,7 @@ struct Formula {
     }
     assignments[stack_size] = -literals[0];
     switch (simplify()) {
-      case 1: // possibly smaller formula
+      case 1: // smaller formula
         if (simple.solve()) {
           return true;
         }
@@ -123,10 +123,10 @@ struct Formula {
         simple.clauses[simple.nbclauses++] = simple.nbliterals;
       }
     }
-    if (simple.nbclauses > 0) {
-      return 1; // possibly smaller formula
+    if (simple.nbclauses == 0) { // satisfiable
+      return 2;
     }
-    return 2; // satisfiable
+    return 1; // smaller formula
   }
   
   // prettyprint formula
