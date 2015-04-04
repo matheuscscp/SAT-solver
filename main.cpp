@@ -28,9 +28,9 @@ struct Formula {
   static int nbvar;
   
   // solver stack
-  static bool X[MAX_VARIABLES + 1];
   static Formula simplifications[MAX_VARIABLES + 1];
-  static int cur_variable;
+  static int assignments[MAX_VARIABLES + 1];
+  static int stack_size;
   
   // read the instance from stdin
   void read() {
@@ -52,8 +52,8 @@ struct Formula {
   
   // basic backtracking solver
   bool solve() {
-    Formula& simple = simplifications[++cur_variable];
-    X[cur_variable] = true;
+    Formula& simple = simplifications[++stack_size];
+    assignments[stack_size] = literals[0];
     switch (simplify()) {
       case 1: // possibly smaller formula
         if (simple.solve()) {
@@ -65,7 +65,7 @@ struct Formula {
       case 3: // evaluated false
         break;
     }
-    X[cur_variable] = false;
+    assignments[stack_size] = -literals[0];
     switch (simplify()) {
       case 1: // possibly smaller formula
         if (simple.solve()) {
@@ -77,51 +77,49 @@ struct Formula {
       case 3: // evaluated false
         break;
     }
-    cur_variable--;
+    stack_size--;
     return false;
   }
   
   // simplify this formula according to the last variable assignment
   int simplify() {
-    Formula& simple = simplifications[cur_variable];
+    Formula& simple = simplifications[stack_size];
     simple.nbclauses = 0;
     simple.nbliterals = 0;
-    bool var = X[cur_variable];
+    int literal = assignments[stack_size];
     bool found = false;
-    int s_n_literals = 0;
+    int cur_nbliterals = 0;
     for (int j = 0; j < clauses[0] && !found; j++) {
-      if ((var && literals[j] == cur_variable) ||
-          (!var && literals[j] == -cur_variable)) {
+      if (literals[j] == literal) {
         found = true;
       }
-      else if (literals[j] != cur_variable && literals[j] != -cur_variable) {
-        simple.literals[s_n_literals++] = literals[j];
+      else if (literals[j] != -literal) {
+        simple.literals[cur_nbliterals++] = literals[j];
       }
     }
-    if (s_n_literals == 0 && !found) {
+    if (cur_nbliterals == 0 && !found) {
       return 3; // evaluated false
     }
     if (!found) {
-      simple.nbliterals += s_n_literals;
+      simple.nbliterals += cur_nbliterals;
       simple.clauses[simple.nbclauses++] = simple.nbliterals;
     }
     for (int i = 1; i < nbclauses; i++) {
       found = false;
-      s_n_literals = 0;
+      cur_nbliterals = 0;
       for (int j = clauses[i - 1]; j < clauses[i] && !found; j++) {
-        if ((var && literals[j] == cur_variable) ||
-            (!var && literals[j] == -cur_variable)) {
+        if (literals[j] == literal) {
           found = true;
         }
-        else if (literals[j] != cur_variable && literals[j] != -cur_variable) {
-          simple.literals[simple.nbliterals + (s_n_literals++)] = literals[j];
+        else if (literals[j] != -literal) {
+          simple.literals[simple.nbliterals + (cur_nbliterals++)] = literals[j];
         }
       }
-      if (s_n_literals == 0 && !found) {
+      if (cur_nbliterals == 0 && !found) {
         return 3; // evaluated false
       }
       if (!found) {
-        simple.nbliterals += s_n_literals;
+        simple.nbliterals += cur_nbliterals;
         simple.clauses[simple.nbclauses++] = simple.nbliterals;
       }
     }
@@ -175,9 +173,9 @@ struct Formula {
 
 // static Formula members
 int Formula::nbvar;
-bool Formula::X[MAX_VARIABLES + 1];
 Formula Formula::simplifications[MAX_VARIABLES + 1];
-int Formula::cur_variable = 0;
+int Formula::assignments[MAX_VARIABLES + 1];
+int Formula::stack_size = 0;
 
 int main() {
   
