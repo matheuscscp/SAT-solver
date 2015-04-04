@@ -1,5 +1,5 @@
 /*
- * backtracking.cpp
+ * main.cpp
  *
  *  Created on: Apr 1, 2015
  *      Author: Pimenta
