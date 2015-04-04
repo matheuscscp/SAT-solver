@@ -1,2 +1,2 @@
-# SAT-solver
-My undergrad final project.
+# basic_backtracking
+Basic backtracking algorithm.
