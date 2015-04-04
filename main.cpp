@@ -53,8 +53,10 @@ struct Formula {
   // basic backtracking solver
   bool solve() {
     Formula& simple = simplifications[++stack_size];
-    literal = literals[0];
-    switch (simplify()) {
+    int value[2] = {1,-1}; // true, false
+    for (int i = 0; i < 2; i++) {
+      literal = value[i]*literals[0];
+      switch (simplify()) {
       case 1: // smaller formula
         if (simple.solve()) {
           return true;
@@ -64,18 +66,7 @@ struct Formula {
         return true;
       case 3: // evaluated false
         break;
-    }
-    literal = -literals[0];
-    switch (simplify()) {
-      case 1: // smaller formula
-        if (simple.solve()) {
-          return true;
-        }
-        break;
-      case 2: // satisfiable
-        return true;
-      case 3: // evaluated false
-        break;
+      }
     }
     stack_size--;
     return false;
