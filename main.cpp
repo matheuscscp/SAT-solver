@@ -7,6 +7,10 @@
 
 #include <cstdio>
 #include <cstring>
+#include <string>
+#include <sstream>
+
+using namespace std;
 
 #define abs(X)  ((X) > 0 ? (X) : (-(X)))
 
@@ -23,8 +27,8 @@ struct Formula {
   int nbliterals;
   
   // index of the last literal of the clause (in the array of literals
-  // above) + 1
-  int clauses[MAX_FORMULA_SIZE];
+  // above) + 1. starts at 1 instead of 0. clauses[0] is always 0
+  int clauses[1 + MAX_FORMULA_SIZE];
   int nbclauses;
   
   // 0 if there is no unit clauses in this formula, or the literal, otherwise
@@ -48,7 +52,8 @@ struct Formula {
     }
     scanf("%d %d", &nbvar, &nbclauses);
     nbliterals = 0;
-    for (int i = 0; i < nbclauses; i++) {
+    clauses[0] = 0;
+    for (int i = 1; i <= nbclauses; i++) {
       int cur_literals = 0;
       while (scanf("%d", &literals[nbliterals]) == 1 && literals[nbliterals]) {
         nbliterals++;
@@ -73,33 +78,6 @@ struct Formula {
     while (unitclause) {
       unit_propagate();
     }
-    Formula& simple = simplifications[++stack_size];
-    literal = literals[0];
-    switch (simplify()) {
-      case 1: // smaller formula
-        if (simple.solve()) {
-          return true;
-        }
-        break;
-      case 2: // satisfiable
-        return true;
-      case 3: // evaluated false
-        break;
-    }
-    literal = -literals[0];
-    switch (simplify()) {
-      case 1: // smaller formula
-        if (simple.solve()) {
-          return true;
-        }
-        break;
-      case 2: // satisfiable
-        return true;
-      case 3: // evaluated false
-        break;
-    }
-    stack_size--;
-    return false;
   }
   
   // if this formula is a set of literals (check before entering this function),
@@ -148,108 +126,39 @@ struct Formula {
     }
   }
   
-  // simplify this formula according to the last variable assignment
-  int simplify() {
-    Formula& simple = simplifications[stack_size];
-    simple.nbclauses = 0;
-    simple.nbliterals = 0;
-    bool found = false;
-    int cur_nbliterals = 0;
-    for (int j = 0; j < clauses[0] && !found; j++) {
-      if (literals[j] == literal) {
-        found = true;
-      }
-      else if (literals[j] != -literal) {
-        simple.literals[cur_nbliterals++] = literals[j];
-      }
-    }
-    if (cur_nbliterals == 0 && !found) {
-      return 3; // evaluated false
-    }
-    if (!found) {
-      simple.nbliterals += cur_nbliterals;
-      simple.clauses[simple.nbclauses++] = simple.nbliterals;
-    }
-    for (int i = 1; i < nbclauses; i++) {
-      found = false;
-      cur_nbliterals = 0;
-      for (int j = clauses[i - 1]; j < clauses[i] && !found; j++) {
-        if (literals[j] == literal) {
-          found = true;
-        }
-        else if (literals[j] != -literal) {
-          simple.literals[simple.nbliterals + (cur_nbliterals++)] = literals[j];
-        }
-      }
-      if (cur_nbliterals == 0 && !found) {
-        return 3; // evaluated false
-      }
-      if (!found) {
-        simple.nbliterals += cur_nbliterals;
-        simple.clauses[simple.nbclauses++] = simple.nbliterals;
-      }
-    }
-    if (simple.nbclauses == 0) { // satisfiable
-      return 2;
-    }
-    else if (simple.nbclauses == simple.nbliterals) {// each clause is a literal
-      static char varsigns[MAX_VARIABLES + 1];
-      memset(varsigns, 0, sizeof varsigns);
-      for (int i = 0; i < simple.nbliterals; i++) {
-        int var = abs(simple.literals[i]);
-        char& sign = varsigns[var];
-        if (!sign) {
-          sign = (simple.literals[i] > 0 ? 1 : -1);
-          continue;
-        }
-        if (var*sign != simple.literals[i]) {
-          return 3; // inconsistent set of literals, then evaluated false
-        }
-      }
-      return 2; // consistent set of literals, then satisfiable
-    }
-    return 1; // smaller formula  
-  }
-  
   // prettyprint formula
   void show() {
     if (nbliterals == 0) {
       printf("\n");
       return;
     }
-    if (literals[0] > 0) {
-      printf("(X%d", literals[0]);
-    }
-    else {
-      printf("(~X%d", -literals[0]);
-    }
-    for (int j = 1; j < clauses[0]; j++) {
-      if (literals[j] > 0) {
-        printf(" V X%d", literals[j]);
+    bool printed = false;
+    for (int i = 1; i <= nbclauses; i++) {
+      if (printed) {
+        printf("^");
       }
       else {
-        printf(" V ~X%d", -literals[j]);
+        printed = true;
       }
-    }
-    printf(")");
-    for (int i = 1; i < nbclauses; i++) {
-      if (literals[clauses[i - 1]] > 0) {
-        printf("^(X%d", literals[clauses[i - 1]]);
-      }
-      else {
-        printf("^(~X%d", -literals[clauses[i - 1]]);
-      }
+      printf("(%s", literal_to_str(literals[clauses[i - 1]]).c_str());
       for (int j = clauses[i - 1] + 1; j < clauses[i]; j++) {
-        if (literals[j] > 0) {
-          printf(" V X%d", literals[j]);
-        }
-        else {
-          printf(" V ~X%d", -literals[j]);
-        }
+        printf(" V %s", literal_to_str(literals[j]).c_str());
       }
       printf(")");
     }
     printf("\n");
+  }
+  
+  // consider the negation to print the variable
+  static string literal_to_str(int literal) {
+    stringstream ss;
+    if (literal > 0) {
+      ss << "X" << literal;
+    }
+    else {
+      ss << "~X" << -literal;
+    }
+    return ss.str();
   }
 };
 
