@@ -42,6 +42,11 @@ struct Formula {
   static int literal;
   static int stack_size;
   
+  // constructor
+  Formula() {
+    clauses[0] = 0;
+  }
+  
   // read the instance from stdin
   void read() {
     while (getchar() == 'c') { // ignore comments
@@ -52,7 +57,6 @@ struct Formula {
     }
     scanf("%d %d", &nbvar, &nbclauses);
     nbliterals = 0;
-    clauses[0] = 0;
     for (int i = 1; i <= nbclauses; i++) {
       int cur_literals = 0;
       while (scanf("%d", &literals[nbliterals]) == 1 && literals[nbliterals]) {
@@ -60,7 +64,7 @@ struct Formula {
         cur_literals++;
       }
       clauses[i] = nbliterals;
-      if (cur_literals == 1 && unitclause == 0) {
+      if (cur_literals == 1 && !unitclause) {
         unitclause = literals[nbliterals - 1];
       }
     }
@@ -68,26 +72,25 @@ struct Formula {
   
   // DPLL solver
   bool solve() {
-    if (nbliterals == nbclauses) { // set of literals
-      // the consistency tells if this formula is satisfiable or not
-      return consistent();
+    if (nbliterals == nbclauses) { // if this formula is a set of literals
+      return consistent_set_of_literals();
     }
     if (contains_empty_clause()) { // unsatisfiable
       return false;
     }
-    while (unitclause) {
+    while (unitclause) { // propagate unit clauses
       unit_propagate();
     }
   }
   
   // if this formula is a set of literals (check before entering this function),
-  // this function will tell if it is consistent, or not
-  bool consistent() {
-    static char varsigns[MAX_VARIABLES + 1];
-    memset(varsigns, 0, sizeof varsigns);
+  // this function will tell if it is consistent or not
+  bool consistent_set_of_literals() {
+    static char signs[MAX_VARIABLES + 1];
+    memset(signs, 0, sizeof signs);
     for (int i = 0; i < nbliterals; i++) {
       int var = abs(literals[i]);
-      char& sign = varsigns[var];
+      char& sign = signs[var];
       if (!sign) {
         sign = (literals[i] > 0 ? 1 : -1);
         continue;
@@ -101,10 +104,7 @@ struct Formula {
   
   // check if this formula contains an empty clause
   bool contains_empty_clause() {
-    if (clauses[0] == 0) {
-      return true;
-    }
-    for (int i = 1; i < nbclauses; i++) {
+    for (int i = 1; i <= nbclauses; i++) {
       if (clauses[i] == clauses[i - 1]) {
         return true;
       }
@@ -114,16 +114,31 @@ struct Formula {
   
   // propagate the unit clause
   void unit_propagate() {
-    bool found = false;
-    int cur_nbliterals = 0;
-    for (int j = 0; j < clauses[0] && !found; j++) {
-      if (literals[j] == unitclause) {
-        found = true;
+    int nbclauses = 0;
+    int nbliterals = 0;
+    int unitclause = 0;
+    for (int i = 1; i <= this->nbclauses; i++) {
+      bool found = false;
+      int cur_nbliterals = 0;
+      for (int j = clauses[i - 1]; j < clauses[i] && !found; j++) {
+        if (literals[j] == this->unitclause) {
+          found = true;
+        }
+        else if (literals[j] != -this->unitclause) {
+          literals[nbliterals + (cur_nbliterals++)] = literals[j];
+        }
       }
-      else if (literals[j] != -unitclause) {
-        //nbliterals
+      if (!found) {
+        nbliterals += cur_nbliterals;
+        clauses[++nbclauses] = nbliterals;
+        if (cur_nbliterals == 1 && !unitclause) {
+          unitclause = literals[nbliterals - 1];
+        }
       }
     }
+    this->nbclauses = nbclauses;
+    this->nbliterals = nbliterals;
+    this->unitclause = unitclause;
   }
   
   // prettyprint formula
