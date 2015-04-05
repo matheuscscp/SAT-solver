@@ -36,6 +36,11 @@ struct Formula {
   static int literal;
   static int stack_size;
   
+  // constructor
+  Formula() {
+    clauses[0] = 0;
+  }
+  
   // read the instance from stdin
   void read() {
     while (getchar() == 'c') { // ignore comments
@@ -46,7 +51,6 @@ struct Formula {
     }
     scanf("%d %d", &nbvar, &nbclauses);
     nbliterals = 0;
-    clauses[0] = 0;
     for (int i = 1; i <= nbclauses; i++) {
       while (scanf("%d", &literals[nbliterals]) == 1 && literals[nbliterals]) {
         nbliterals++;
@@ -82,7 +86,6 @@ struct Formula {
     Formula& simple = simplifications[stack_size];
     simple.nbclauses = 0;
     simple.nbliterals = 0;
-    simple.clauses[0] = 0;
     for (int i = 1; i <= nbclauses; i++) {
       bool found = false;
       int cur_nbliterals = 0;
