@@ -63,11 +63,6 @@ struct Formula {
     }
   }
   
-  // DPLL solver
-  bool solve() {
-    return false;
-  }
-  
   // prettyprint formula
   void show() {
     if (nbliterals == 0) {
@@ -101,6 +96,11 @@ struct Formula {
       ss << "~X" << -literal;
     }
     return ss.str();
+  }
+  
+  // DPLL solver
+  bool solve() {
+    return false;
   }
 };
 
