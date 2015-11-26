@@ -4,6 +4,8 @@
 
 using namespace std;
 
+char trash[1000];
+
 // the size of a formula is the sum of the number of literals in each clause
 #define MAX_FORMULA_SIZE  1000
 
@@ -44,10 +46,7 @@ struct Formula {
     while (getchar() == 'c') { // ignore comments
       for (char c = getchar(); c != '\n'; c = getchar()); // ignore line
     }
-    for (int i = 0; i < 5; i++) { // ignore format
-      getchar();
-    }
-    scanf("%d %d", &nbvar, &nbclauses);
+    scanf("%s %s %d %d", trash, trash, &nbvar, &nbclauses);
     nbliterals = 0;
     for (int i = 1; i <= nbclauses; i++) {
       while (scanf("%d", &literals[nbliterals]) > 0 && literals[nbliterals]) {
