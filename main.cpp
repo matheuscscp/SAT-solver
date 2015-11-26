@@ -1,10 +1,3 @@
-/*
- * main.cpp
- *
- *  Created on: Apr 1, 2015
- *      Author: Pimenta
- */
-
 #include <cstdio>
 #include <string>
 #include <sstream>
@@ -19,14 +12,19 @@ using namespace std;
 
 // represents a propositional formula
 struct Formula {
-  // i means the i-th variable, -i means the i-th variable negated
+  // let p = literals[i], i in {0,1,2,...,nbliterals-1}.
+  // if p > 0, then p is a variable.
+  // if p < 0, then p is the negation of variable -p
   int literals[MAX_FORMULA_SIZE];
   int nbliterals;
   
-  // index of the last literal of the clause (in the array of literals
-  // above) + 1. starts at 1 instead of 0. clauses[0] is always 0
+  // let i = clauses[c], c in {1,2,...,nbclauses}.
+  // then literals[i-1] is the last literal of clause c; and
+  // literals[i] is the first literal of clause c+1.
+  // clauses[0] is always 0, so clauses[0]-1 is not a valid index for array
+  // literals, but literals[clauses[0]] is the first literal of clause 1.
   int clauses[1 + MAX_FORMULA_SIZE];
-  int nbclauses;
+  int nbclauses; // number of clauses in the formula
   
   // the number of variables
   static int nbvar;
@@ -52,7 +50,7 @@ struct Formula {
     scanf("%d %d", &nbvar, &nbclauses);
     nbliterals = 0;
     for (int i = 1; i <= nbclauses; i++) {
-      while (scanf("%d", &literals[nbliterals]) == 1 && literals[nbliterals]) {
+      while (scanf("%d", &literals[nbliterals]) > 0 && literals[nbliterals]) {
         nbliterals++;
       }
       clauses[i] = nbliterals;
