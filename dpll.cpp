@@ -6,11 +6,18 @@
 
 using namespace std;
 
+string int2str(int n) {
+  char buf[12];
+  sprintf(buf,"%d",n);
+  return string(buf);
+}
+
 struct Clause {
   set<int> lits;
 };
 struct Variable {
-  set<int> pos, neg; // var's occurrences inside clauses
+  set<int> pos; // the set of clauses in which this variable occurs positive
+  set<int> neg; // the set of clauses in which this variable occurs negative
   set<int>& occurrences(int sign) { return sign > 0 ? pos : neg; }
 };
 struct Formula {
@@ -22,6 +29,9 @@ struct Formula {
   
   // read an instance from stdin in DIMACS format
   void read() {
+    clauses.clear();
+    vars.clear();
+    
     while (getchar() == 'c') { // ignore comments
       for (char c = getchar(); c != '\n'; c = getchar()); // ignore line
     }
@@ -43,11 +53,6 @@ struct Formula {
   }
   
   // convert formula to human-legible string
-  static string int2str(int n) {
-    char buf[12];
-    sprintf(buf,"%d",n);
-    return string(buf);
-  }
   static string lit2str(int lit) {
     return lit > 0 ? "X"+int2str(lit) : "~X"+int2str(-lit);
   }
@@ -151,7 +156,7 @@ struct Formula {
     for (bool u = true, p; u || p; u = unit(), p = pure());
   }
   
-  // find one unit clause with literal lit and call simplify(lit)
+  // find ONE unit clause with literal lit and call simplify(lit)
   bool unit() {
     int lit = 0;
     for (auto& c : clauses) {
@@ -167,7 +172,7 @@ struct Formula {
     return false;
   }
   
-  // find one pure literal lit and call simplify(lit)
+  // find ONE pure literal lit and call simplify(lit)
   bool pure() {
     int lit = 0;
     for (auto& v : vars) {
