@@ -153,23 +153,7 @@ struct Formula {
   }
   
   void dpll() {
-    for (bool u = true, p; u || p; u = unit(), p = pure());
-  }
-  
-  // find ONE unit clause with literal lit and call simplify(lit)
-  bool unit() {
-    int lit = 0;
-    for (auto& c : clauses) {
-      if (c.second.lits.size() == 1) {
-        lit = *c.second.lits.begin();
-        break;
-      }
-    }
-    if (lit) {
-      simplify(lit);
-      return true;
-    }
-    return false;
+    for (bool p = true, u; p || u; p = pure(), u = unit());
   }
   
   // find ONE pure literal lit and call simplify(lit)
@@ -182,6 +166,22 @@ struct Formula {
       }
       else if (v.second.pos.size() == 0) {
         lit = -v.first;
+        break;
+      }
+    }
+    if (lit) {
+      simplify(lit);
+      return true;
+    }
+    return false;
+  }
+  
+  // find ONE unit clause with literal lit and call simplify(lit)
+  bool unit() {
+    int lit = 0;
+    for (auto& c : clauses) {
+      if (c.second.lits.size() == 1) {
+        lit = *c.second.lits.begin();
         break;
       }
     }
