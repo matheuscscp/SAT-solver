@@ -1,0 +1,253 @@
+<html>
+
+  <head>
+    <title>
+      CNF Files
+    </title>
+  </head>
+
+  <body bgcolor="#EEEEEE" link="#CC0000" alink="#FF3300" vlink="#000055" >
+    
+    <h1 align="center">HTML file downloaded from <a href="http://people.sc.fsu.edu/~jburkardt/data/cnf/cnf.html" target="_blank">http://people.sc.fsu.edu/~jburkardt/data/cnf/cnf.html</a></h1>
+    
+    <h1 align = "center">
+      CNF Files
+    </h1>
+
+    <hr>
+
+    <p>
+      <b>CNF</b> is a data directory which
+      contains examples of files stored using the DIMACS CNF file format.
+      This format is used to define a Boolean expression,
+      written in conjunctive normal form, that may be used as an example
+      of the satisfiability problem.
+    </p>
+
+    <p>
+      The satisfiability problem considers the case in which N boolean
+      variables are used to form a Boolean expression involving negation (<b>NOT</b>),
+      conjunction (<b>AND</b>) and disjunction (<b>OR</b>).  The problem is
+      to determine whether there is any assignment of values to the Boolean
+      variables which makes the formula true.  It's something like trying to
+      flip a bunch of switches to find the setting that makes a light bulb turn on.
+    </p>
+
+    <p>
+      For simplicity, it is common to require that the boolean expression be
+      written in conjunction normal form or "CNF".  A formula in conjunctive
+      normal form consists:
+      <ol>
+        <li>
+          <i>clauses</i> joined by <b>AND</b>;
+        </li>
+        <li>
+          each clause, in turn, consists of <i>literals</i> joined
+          by <b>OR</b>;
+        </li>
+        <li>
+          each literal is either the name of a variable <i>(a positive literal</i>, or the
+          name of a variable preceded by <b>NOT</b> <i>(a negative literal</i>.
+        </li>
+      </ol>
+    </p>
+
+    <p>
+      An example of a boolean expression in 3 variables and 2 clauses:
+      <pre><b>
+        ( x(1) OR ( NOT x(3) ) )
+        AND
+        ( x(2) OR x(3) OR ( NOT x(1) ) ).
+      </b></pre>
+    </p>
+
+    <p>
+      The CNF file format is an ASCII file format.
+      <ol>
+        <li>
+          The file may begin with comment lines.  The first character of each
+          comment line must be a lower case letter "c".  Comment lines typically
+          occur in one section at the beginning of the file, but are allowed to
+          appear throughout the file.
+        </li>
+        <li>
+          The comment lines are followed by the "problem" line.  This begins
+          with a lower case "p" followed by a space, followed by the
+          problem type, which for CNF files is "cnf", followed by the number
+          of variables followed by the number of clauses.
+        </li>
+        <li>
+          The remainder of the file contains lines defining the clauses, one by one.
+        </li>
+        <li>
+          A clause is defined by listing the index of each positive literal, and the
+          negative index of each negative literal.  Indices are 1-based,
+          and for obvious reasons the index 0 is not allowed.
+        </li>
+        <li>
+          The definition of a clause may extend beyond a single line of text.
+        </li>
+        <li>
+          The definition of a clause is terminated by a final value of "0".
+        </li>
+        <li>
+          The file terminates after the last clause is defined.
+        </li>
+      </ol>
+    </p>
+
+    <p>
+      Some odd facts include:
+      <ul>
+        <li>
+          The definition of the next clause normally begins on a new line,
+          but may follow, on the same line, the "0" that marks the end of the
+          previous clause.
+        </li>
+        <li>
+          In some examples of CNF files, the definition of the last clause
+          is not terminated by a final '0';
+        </li>
+        <i>
+          In some examples of CNF files, the rule that the variables are numbered
+          from 1 to N is not followed.  The file might declare that there are 10
+          variables, for instance, but allow them to be numbered 2 through 11.
+        </i>
+      </ul>
+    </p>
+
+    <p>
+      Some of the examples in this directory come from a server at Rutgers University
+      <a href = "ftp://dimacs.rutgers.edu/pub/challenge/satisfiability">
+                 ftp://dimacs.rutgers.edu/pub/challenge/satisfiability </a>
+    </p>
+
+    <h3 align = "center">
+      Example:
+    </h3>
+
+    <p>
+      Here is the CNF file that corresponds to the simple formula discussed above:
+      <pre>
+      c  simple_v3_c2.cnf
+      c
+      p cnf 3 2
+      1 -3 0
+      2 3 -1 0
+      </pre>
+    </p>
+
+    <h3 align = "center">
+      Licensing:
+    </h3>
+
+    <p>
+      The computer code and data files described and made available on this web page
+      are distributed under
+      <a href = "../../txt/gnu_lgpl.txt">the GNU LGPL license.</a>
+    </p>
+
+    <h3 align = "center">
+      Reference:
+    </h3>
+
+    <p>
+      <ol>
+        <li>
+          Rina Dechter,<br>
+          Enhancement Schemes for constraint processing:
+          Backjumping, learning, and cutset decomposition,<br>
+          Artificial Intelligence,<br>
+          Volume 41, Number 3, January 1990, pages 273-312.
+        </li>
+        <li>
+          Michael Quinn,<br>
+          Parallel Programming in C with MPI and OpenMP,<br>
+          McGraw-Hill, 2004,<br>
+          ISBN13: 978-0071232654,<br>
+          LC: QA76.73.C15.Q55.
+        </li>
+        <li>
+          <a href = "../../pdf/dimacs_cnf.pdf">dimacs_cnf.pdf</a>,
+          a writeup of the DIMACS CNF file format.
+        </li>
+      </ol>
+    </p>
+
+    <h3 align = "center">
+      Sample Files:
+    </h3>
+
+    <p>
+      <ul>
+        <li>
+          <a href = "aim-100-1_6-no-1.cnf">aim-100-1_6-no-1.cnf</a>,
+          100 variables and 160 clauses.
+        </li>
+        <li>
+          <a href = "aim-50-1_6-yes1-4.cnf">aim-50-1_6-yes1-4.cnf</a>,
+          50 variables and 80 clauses.
+        </li>
+        <li>
+          <a href = "bf0432-007.cnf">bf0432-007.cnf</a>,
+          1040 variables and 3668 clauses.
+        </li>
+        <li>
+          <a href = "dubois20.cnf">dubois20.cnf</a>,
+          60 variables and 160 clauses.
+        </li>
+        <li>
+          <a href = "dubois21.cnf">dubois21.cnf</a>,
+          63 variables and 168 clauses.
+        </li>
+        <li>
+          <a href = "dubois22.cnf">dubois22.cnf</a>,
+          66 variables and 176 clauses.
+        </li>
+        <li>
+          <a href = "hole6.cnf">hole6.cnf</a>,
+          based on the pigeon hole problem,
+          a simple example with 42 variables and 133 clauses.
+        </li>
+        <li>
+          <a href = "par8-1-c.cnf">par8-1-c.cnf</a>,
+          an example with 64 variables and 254 clauses.
+        </li>
+        <li>
+          <a href = "quinn.cnf">quinn.cnf</a>,
+          an example from Quinn's text,
+          16 variables and 18 clauses.
+        </li>
+        <li>
+          <a href = "simple_v3_c2.cnf">simple_v3_c2.cnf</a>,
+          a simple example with 3 variables and 2 clauses.
+        </li>
+        <li>
+          <a href = "zebra.c">zebra.c</a>,
+          a pseudo C file that can be run through the C preprocessor to
+          generate the CNF file for the "Who Owns the Zebra" puzzle.
+        </li>
+        <li>
+          <a href = "zebra_v155_c1135.cnf">zebra_v155_c1135.cnf</a>,
+          a formulation of the "Who Owns the Zebra?" puzzle,
+          with 155 variables and 1135 clauses.
+        </li>
+      </ul>
+    </p>
+
+    <p>
+      You can go up one level to
+      <a href = "../data.html">the DATA page.</a>
+    </p>
+
+    <hr>
+
+    <i>
+      Last revised on 22 May 2008.
+    </i>
+
+    <!-- John Burkardt -->
+
+  </body>
+
+</html>
