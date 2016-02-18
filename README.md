@@ -1,3 +1,3 @@
 # SAT-solver
 
-simple DPLL SAT solver
+Simple DPLL SAT solver.
